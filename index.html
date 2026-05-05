@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وكيل البحث العلمي – أبو أويس</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-pale: #f7eecf;
+  --brown: #42160e;
+  --brown-mid: #6b2a1f;
+  --cream: #fdf8f0;
+  --cream-dark: #f0e6c8;
+  --ink: #1a1008;
+  --ink-muted: #6b5a3a;
+  --border: rgba(201,168,76,0.25);
+  --shadow: 0 8px 32px rgba(66,22,14,0.1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Cairo',sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
+
+header {
+  background:linear-gradient(135deg,var(--brown) 0%,var(--brown-mid) 100%);
+  padding:1.8rem 2rem;
+  border-bottom:3px solid var(--gold);
+}
+.header-inner { max-width:900px; margin:0 auto; display:flex; align-items:center; gap:1.2rem; }
+.header-badge {
+  width:52px; height:52px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  border-radius:14px; display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; flex-shrink:0; box-shadow:0 4px 16px rgba(201,168,76,0.5);
+}
+.header-text h1 { font-family:'Amiri',serif; font-size:1.5rem; color:var(--gold-light); }
+.header-text p { font-size:0.8rem; color:rgba(232,201,122,0.55); margin-top:0.15rem; }
+
+main { max-width:900px; margin:0 auto; padding:2rem 1.5rem 4rem; }
+
+.card {
+  background:white; border:1px solid var(--border);
+  border-radius:16px; padding:1.8rem;
+  box-shadow:var(--shadow); margin-bottom:1.5rem;
+}
+
+.section-label {
+  font-family:'Amiri',serif; font-size:1.05rem;
+  color:var(--brown); margin-bottom:0.8rem;
+  display:flex; align-items:center; gap:0.5rem;
+}
+
+/* API Key field */
+.api-row { display:flex; gap:0.8rem; align-items:center; }
+.api-input {
+  flex:1; padding:0.7rem 1rem;
+  border:2px solid var(--cream-dark); border-radius:10px;
+  font-family:'Cairo',sans-serif; font-size:0.9rem;
+  direction:ltr; outline:none; transition:border-color 0.2s;
+  background:var(--cream);
+}
+.api-input:focus { border-color:var(--gold); background:white; }
+.btn-save {
+  padding:0.7rem 1.2rem;
+  background:var(--brown); color:var(--gold-light);
+  border:none; border-radius:10px;
+  font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:600;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.btn-save:hover { background:var(--brown-mid); }
+.api-status { font-size:0.8rem; margin-top:0.5rem; color:var(--ink-muted); }
+.api-status.ok { color:#2d6a4f; font-weight:600; }
+
+textarea {
+  width:100%; min-height:110px; padding:1rem 1.2rem;
+  border:2px solid var(--cream-dark); border-radius:12px;
+  font-family:'Amiri',serif; font-size:1.1rem; color:var(--ink);
+  background:var(--cream); resize:vertical; direction:rtl;
+  line-height:1.8; outline:none; transition:border-color 0.2s;
+}
+textarea:focus { border-color:var(--gold); background:white; }
+textarea::placeholder { color:var(--ink-muted); opacity:0.55; }
+
+.btn-row { display:flex; gap:0.8rem; margin-top:1rem; flex-wrap:wrap; align-items:center; }
+.btn-main {
+  padding:0.85rem 2rem;
+  background:linear-gradient(135deg,var(--brown),var(--brown-mid));
+  color:var(--gold-light); border:none; border-radius:10px;
+  font-family:'Cairo',sans-serif; font-size:1rem; font-weight:700;
+  cursor:pointer; box-shadow:0 4px 14px rgba(66,22,14,0.35);
+  transition:all 0.2s; display:flex; align-items:center; gap:0.5rem;
+}
+.btn-main:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 18px rgba(66,22,14,0.45); }
+.btn-main:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+.btn-clear {
+  padding:0.85rem 1.2rem; background:transparent;
+  border:1px solid var(--border); border-radius:10px;
+  font-family:'Cairo',sans-serif; font-size:0.9rem;
+  color:var(--ink-muted); cursor:pointer; transition:all 0.2s;
+}
+.btn-clear:hover { border-color:var(--gold); color:var(--brown); }
+.hint { font-size:0.78rem; color:var(--ink-muted); margin-top:0.6rem; opacity:0.7; }
+
+/* Progress */
+.progress-card { display:none; }
+.progress-card.active { display:block; }
+.step {
+  display:flex; align-items:flex-start; gap:0.9rem;
+  padding:0.55rem 0; opacity:0.3; transition:opacity 0.3s; font-size:0.92rem;
+}
+.step.active, .step.done { opacity:1; }
+.step-icon {
+  width:28px; height:28px; border-radius:50%;
+  background:var(--cream-dark);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.85rem; flex-shrink:0; transition:background 0.3s;
+}
+.step.done .step-icon { background:var(--gold); }
+.step.active .step-icon { background:var(--brown); color:var(--gold-light); }
+.step-text { line-height:1.5; padding-top:0.15rem; }
+.step-text strong { font-weight:600; color:var(--brown); }
+.step-text small { display:block; font-size:0.78rem; color:var(--ink-muted); margin-top:0.15rem; }
+.spinner-inline {
+  width:14px; height:14px; border:2px solid rgba(201,168,76,0.3);
+  border-top-color:var(--gold); border-radius:50%;
+  animation:spin 0.7s linear infinite; display:inline-block;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Result */
+.result-card { display:none; animation:fadeIn 0.4s ease; }
+.result-card.active { display:block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.result-header {
+  background:linear-gradient(135deg,var(--brown),var(--brown-mid));
+  padding:1.2rem 1.8rem; border-radius:16px 16px 0 0;
+  display:flex; align-items:center; gap:0.8rem;
+}
+.result-header h2 { font-family:'Amiri',serif; font-size:1.15rem; color:var(--gold-light); flex:1; }
+.result-body { padding:2rem 1.8rem; background:white; border-radius:0 0 16px 16px; border:1px solid var(--border); border-top:none; }
+
+.explanation { font-family:'Amiri',serif; font-size:1.1rem; line-height:2; color:var(--ink); direction:rtl; }
+.explanation p { margin-bottom:1rem; }
+.explanation h3 { font-size:1.15rem; color:var(--brown); margin:1.5rem 0 0.6rem; padding-bottom:0.4rem; border-bottom:1px solid var(--border); }
+.explanation blockquote {
+  border-right:4px solid var(--gold); padding:0.8rem 1.2rem;
+  margin:1rem 0; background:var(--gold-pale);
+  border-radius:0 8px 8px 0; font-style:italic; color:var(--brown);
+}
+
+.sources-section { margin-top:2rem; padding-top:1.5rem; border-top:2px solid var(--border); }
+.sources-title { font-family:'Amiri',serif; font-size:1rem; color:var(--brown); margin-bottom:1rem; }
+.sources-title::before { content:'📚 '; }
+.source-item { display:flex; align-items:flex-start; gap:0.8rem; padding:0.7rem 0; border-bottom:1px solid var(--border); font-size:0.88rem; }
+.source-item:last-child { border-bottom:none; }
+.source-num { width:22px; height:22px; background:var(--gold); color:var(--brown); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; flex-shrink:0; }
+.source-book { font-family:'Amiri',serif; font-weight:700; color:var(--brown); }
+.source-excerpt { font-size:0.82rem; color:var(--ink-muted); margin-top:0.2rem; line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+.error-box { background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:1rem; color:#b91c1c; font-size:0.9rem; margin-top:1rem; }
+.btn-copy { padding:0.5rem 1.2rem; background:var(--cream); border:1px solid var(--border); border-radius:8px; font-family:'Cairo',sans-serif; font-size:0.82rem; color:var(--brown); cursor:pointer; transition:all 0.2s; margin-top:1rem; }
+.btn-copy:hover { background:var(--gold-pale); border-color:var(--gold); }
+.api-note { text-align:center; font-size:0.75rem; color:var(--ink-muted); margin-top:3rem; padding-top:1rem; border-top:1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">🤖</div>
+    <div class="header-text">
+      <h1>وكيل البحث العلمي الذاتي</h1>
+      <p>يبحث في المكتبة الشاملة الذهبية ويشرح بأسلوب علمي · أبو أويس عبد الملك بن علي</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- API Key Card -->
+  <div class="card" id="apiCard">
+    <div class="section-label">🔑 مفتاح Claude API</div>
+    <div class="api-row">
+      <input type="password" class="api-input" id="apiKeyInput" placeholder="sk-ant-api03-..." />
+      <button class="btn-save" onclick="saveKey()">حفظ</button>
+    </div>
+    <div class="api-status" id="apiStatus">أدخل مفتاح Claude API الخاص بك — يُحفظ في المتصفح فقط ولا يُرسل لأي جهة</div>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="section-label">📝 أدخل الحديث أو المسألة أو الموضوع</div>
+    <textarea id="userInput" placeholder="مثال: «من أحب لقاء الله أحب الله لقاءه» — أو: اشرح معنى الإخلاص عند السلف — أو: اذكر ما ورد في الصيام من مسند أحمد"></textarea>
+    <div class="btn-row">
+      <button class="btn-main" id="runBtn" onclick="runAgent()">
+        <span>🔬</span> ابدأ البحث والشرح
+      </button>
+      <button class="btn-clear" onclick="clearAll()">مسح</button>
+    </div>
+    <div class="hint">الوكيل يستخرج المصطلحات بنفسه، يبحث في 50.000 كتاب، ثم يشرح علمياً بالأسلوب الكلاسيكي — دون أي تدخل منك</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card progress-card" id="progressCard">
+    <div class="step" id="s1">
+      <div class="step-icon">1</div>
+      <div class="step-text"><strong>استخراج المصطلحات</strong><small id="s1txt">في انتظار البدء...</small></div>
+    </div>
+    <div class="step" id="s2">
+      <div class="step-icon">2</div>
+      <div class="step-text"><strong>البحث الذاتي في المكتبة الشاملة الذهبية</strong><small id="s2txt">في انتظار المصطلحات...</small></div>
+    </div>
+    <div class="step" id="s3">
+      <div class="step-icon">3</div>
+      <div class="step-text"><strong>انتقاء أفضل الشواهد من كتب السلف</strong><small id="s3txt">في انتظار نتائج البحث...</small></div>
+    </div>
+    <div class="step" id="s4">
+      <div class="step-icon">4</div>
+      <div class="step-text"><strong>صياغة الشرح العلمي بالأسلوب الكلاسيكي</strong><small id="s4txt">في انتظار التحليل...</small></div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <span style="font-size:1.4rem">📜</span>
+      <h2 id="resultTitle">الشرح العلمي</h2>
+    </div>
+    <div class="result-body">
+      <div class="explanation" id="explanationDiv"></div>
+      <button class="btn-copy" onclick="copyResult()">📋 نسخ الشرح</button>
+      <div class="sources-section" id="sourcesSection">
+        <div class="sources-title">المصادر من المكتبة الشاملة الذهبية</div>
+        <div id="sourcesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="api-note">
+    يتصل الوكيل بـ api.goldenshamela.com وبـ Claude API · المفتاح يُخزَّن في متصفحك فقط
+  </div>
+</main>
+
+<script>
+const SHAMELA = 'https://api.goldenshamela.com/api';
+const CLAUDE  = 'https://api.anthropic.com/v1/messages';
+
+// ── Key management ──
+function saveKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    document.getElementById('apiStatus').textContent = '⚠️ المفتاح يجب أن يبدأ بـ sk-ant-';
+    document.getElementById('apiStatus').className = 'api-status';
+    return;
+  }
+  localStorage.setItem('claude_key', key);
+  document.getElementById('apiStatus').textContent = '✅ تم حفظ المفتاح في متصفحك — يمكنك البدء الآن';
+  document.getElementById('apiStatus').className = 'api-status ok';
+  document.getElementById('apiKeyInput').value = '••••••••••••••••••••';
+}
+
+function getKey() {
+  return localStorage.getItem('claude_key') || '';
+}
+
+window.addEventListener('load', () => {
+  if (getKey()) {
+    document.getElementById('apiStatus').textContent = '✅ المفتاح محفوظ — يمكنك البدء مباشرة';
+    document.getElementById('apiStatus').className = 'api-status ok';
+    document.getElementById('apiKeyInput').placeholder = '••• المفتاح محفوظ مسبقاً •••';
+  }
+});
+
+// ── Step helpers ──
+function setStep(n, state, sub) {
+  const el = document.getElementById('s'+n);
+  el.className = 'step ' + state;
+  if (sub !== undefined) document.getElementById('s'+n+'txt').innerHTML = sub;
+  const icon = el.querySelector('.step-icon');
+  if (state === 'active') icon.innerHTML = '<div class="spinner-inline"></div>';
+  else if (state === 'done') icon.textContent = '✓';
+  else icon.textContent = n;
+}
+
+// ── Claude call ──
+async function callClaude(userMsg, system, maxTokens = 1000) {
+  const key = getKey();
+  if (!key) throw new Error('لم يُدخَل مفتاح API');
+  const res = await fetch(CLAUDE, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || 'Claude API error ' + res.status);
+  }
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+// ── Shamela search ──
+async function searchShamela(keyword) {
+  try {
+    const res = await fetch(`${SHAMELA}/search?page=1`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ word: keyword })
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data?.data || []).slice(0, 6);
+  } catch { return []; }
+}
+
+// ── Main agent ──
+async function runAgent() {
+  const input = document.getElementById('userInput').value.trim();
+  if (!input || input.length < 4) { alert('الرجاء إدخال نص'); return; }
+  if (!getKey()) { alert('الرجاء إدخال مفتاح Claude API أولاً'); return; }
+
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('progressCard').classList.add('active');
+  document.getElementById('resultCard').classList.remove('active');
+
+  let allSources = [];
+
+  try {
+    // Step 1 – Extract keywords
+    setStep(1,'active','يحلّل النص ويستخرج المصطلحات...');
+    setStep(2,''); setStep(3,''); setStep(4,'');
+
+    const kwRaw = await callClaude(
+      `النص: "${input}"\n\nاستخرج 4 إلى 6 مصطلحات بحثية عربية جوهرية للبحث في كتب السلف. أعطني المصطلحات فقط مفصولة بفاصلة، بدون أي شرح.`,
+      'متخصص في استخراج المصطلحات الشرعية من النصوص العربية. أجب بالعربية فقط.',
+      200
+    );
+    const keywords = kwRaw.split(/[،,\n]/).map(k=>k.trim()).filter(k=>k.length>1).slice(0,5);
+    setStep(1,'done','المصطلحات: ' + keywords.join(' · '));
+
+    // Step 2 – Search Shamela
+    setStep(2,'active',`يبحث في المكتبة عن: ${keywords.slice(0,3).join('، ')}...`);
+    const allResults = [];
+    for (const kw of keywords.slice(0,4)) {
+      const results = await searchShamela(kw);
+      results.forEach(r => {
+        if (!allResults.find(x => x?.content === r?.content)) allResults.push({...r, kw});
+      });
+      await new Promise(r=>setTimeout(r,400));
+    }
+    setStep(2,'done', allResults.length > 0 ? `وُجد ${allResults.length} نص في المكتبة` : 'لا نصوص — سيشرح من العلم العام');
+
+    // Step 3 – Select best sources
+    if (allResults.length > 0) {
+      setStep(3,'active','ينتقي أفضل الشواهد...');
+      const excerpts = allResults.slice(0,10).map((r,i) => {
+        const book = r?.book?.bookname || 'غير معروف';
+        const content = (r?.content||'').substring(0,250);
+        return `[${i+1}] "${book}":\n${content}`;
+      }).join('\n\n---\n\n');
+
+      const selRaw = await callClaude(
+        `النص: "${input}"\n\nنصوص من المكتبة:\n${excerpts}\n\nاختر أرقام النصوص الأكثر صلة (3 إلى 5). الأرقام فقط مفصولة بفاصلة.`,
+        'عالم متخصص في كتب السلف. اختر النصوص الأكثر صلة.',
+        150
+      );
+      const indices = selRaw.match(/\d+/g)?.map(Number).filter(n=>n>=1&&n<=allResults.length) || [1,2,3];
+      allSources = indices.map(i=>allResults[i-1]).filter(Boolean);
+      setStep(3,'done',`انتُقيَ ${allSources.length} شواهد من كتب السلف`);
+    } else {
+      setStep(3,'done','لا شواهد من المكتبة');
+    }
+
+    // Step 4 – Generate explanation
+    setStep(4,'active','يصوغ الشرح العلمي...');
+    const sourcesText = allSources.length > 0
+      ? allSources.map((s,i) => {
+          const book = s?.book?.bookname || 'غير معروف';
+          const author = s?.book?.author?.[0]?.authorname || '';
+          const year = s?.book?.publisheryear;
+          const content = (s?.content||'').substring(0,400);
+          return `[${i+1}] "${book}"${author?' لـ'+author:''}${year?' (ت'+year+'هـ)':''}:\n«${content}»`;
+        }).join('\n\n')
+      : 'لا مصادر من المكتبة — اشرح من علمك بكتب السلف.';
+
+    const explanation = await callClaude(
+      `المطلوب شرحه: "${input}"\n\nنصوص من المكتبة الشاملة الذهبية:\n${sourcesText}\n\nاكتب شرحاً علمياً وافياً بالأسلوب الكلاسيكي مع العزو الدقيق لكل قول.`,
+      `أنت عالم متخصص في شرح كتب السلف الصالح، تكتب بالأسلوب الكلاسيكي الرصين.
+قواعد:
+- اعزُ كل قول إلى مصدره بدقة
+- ابدأ بشرح المصطلح لغةً واصطلاحاً
+- أضف أقوال السلف من المصادر
+- اختم بفائدة عملية
+- اكتب بالعربية الفصحى الكلاسيكية`,
+      1800
+    );
+    setStep(4,'done','اكتمل الشرح العلمي ✓');
+
+    // ── Render ──
+    document.getElementById('resultTitle').textContent =
+      'الشرح العلمي: ' + input.substring(0,60) + (input.length>60?'...':'');
+
+    let html = explanation
+      .replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')
+      .replace(/^/,'<p>').replace(/$/,'</p>')
+      .replace(/###?\s*(.+)/g,'<h3>$1</h3>')
+      .replace(/«([^»]+)»/g,'<blockquote>$1</blockquote>');
+    document.getElementById('explanationDiv').innerHTML = html;
+
+    if (allSources.length > 0) {
+      document.getElementById('sourcesSection').style.display = 'block';
+      document.getElementById('sourcesList').innerHTML = allSources.map((s,i) => {
+        const book = s?.book?.bookname || 'غير معروف';
+        const author = s?.book?.author?.[0]?.authorname || 'مجهول';
+        const year = s?.book?.publisheryear;
+        const content = (s?.content||'').substring(0,180);
+        return `<div class="source-item">
+          <div class="source-num">${i+1}</div>
+          <div>
+            <div class="source-book">${book}${year?' (ت '+year+' هـ)':''}</div>
+            <div style="font-size:0.8rem;color:var(--ink-muted);margin:0.2rem 0">✍️ ${author}</div>
+            <div class="source-excerpt">${content}...</div>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      document.getElementById('sourcesSection').style.display = 'none';
+    }
+
+    document.getElementById('resultCard').classList.add('active');
+    document.getElementById('resultCard').scrollIntoView({behavior:'smooth',block:'start'});
+
+  } catch(e) {
+    document.getElementById('progressCard').innerHTML +=
+      `<div class="error-box">⚠️ خطأ: ${e.message}</div>`;
+  } finally {
+    document.getElementById('runBtn').disabled = false;
+  }
+}
+
+function clearAll() {
+  document.getElementById('userInput').value = '';
+  document.getElementById('progressCard').classList.remove('active');
+  document.getElementById('resultCard').classList.remove('active');
+  document.getElementById('runBtn').disabled = false;
+  [1,2,3,4].forEach(n => setStep(n,'',''));
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(document.getElementById('explanationDiv').innerText)
+    .then(() => {
+      const b = document.querySelector('.btn-copy');
+      b.textContent = '✅ تم النسخ';
+      setTimeout(()=> b.textContent='📋 نسخ الشرح', 2000);
+    });
+}
+</script>
+</body>
+</html>
